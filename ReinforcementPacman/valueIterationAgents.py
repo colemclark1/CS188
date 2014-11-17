@@ -50,15 +50,12 @@ class ValueIterationAgent(ValueEstimationAgent):
           self.values[state] = 0
 
         for i in xrange(self.iterations):
-          old_values = util.Counter()
+          new_values = util.Counter()
           for state in states:
             if not self.mdp.isTerminal(state):
-              q_values = util.Counter()
-              for action in self.mdp.getPossibleActions(state):
-                # print action
-                q_values[action] = self.computeQValueFromValues(state,action)
-              old_values[state] = q_values[q_values.argMax()]
-          self.values = old_values.copy()
+              actions = self.mdp.getPossibleActions(state)
+              new_values[state] = max([self.computeQValueFromValues(state,action) for action in actions])
+          self.values = new_values.copy()
             
 
 
