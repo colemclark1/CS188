@@ -66,7 +66,7 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
         actions = self.getLegalActions(state)
-        if actions == []:
+        if not actions:
           return 0.0
         return max([self.getQValue(state,action) for action in actions])
 
@@ -78,7 +78,7 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
         actions = self.getLegalActions(state)
-        if actions == []:
+        if not actions:
           return None
 
         q_values = util.Counter()
