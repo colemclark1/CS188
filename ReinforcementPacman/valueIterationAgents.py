@@ -50,13 +50,15 @@ class ValueIterationAgent(ValueEstimationAgent):
           self.values[state] = 0
 
         for i in xrange(self.iterations):
+          old_values = util.Counter()
           for state in states:
             if not self.mdp.isTerminal(state):
               q_values = util.Counter()
               for action in self.mdp.getPossibleActions(state):
                 # print action
                 q_values[action] = self.computeQValueFromValues(state,action)
-              self.values[state] = q_values[q_values.argMax()]
+              old_values[state] = q_values[q_values.argMax()]
+          self.values = old_values.copy()
             
 
 
@@ -78,13 +80,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         statesAndProbs = self.mdp.getTransitionStatesAndProbs(state, action)
         q_value = 0
         for next_state, prob in statesAndProbs:
-          # print self.discount
-          # print self.getValue(next_state)
-          # print "Here"
-          disc = self.discount
-          disc = disc*self.getValue(next_state)
-          disc = self.mdp.getReward(state, action, next_state)
-          q_value += prob*(disc)
+          q_value += prob*(self.mdp.getReward(state, action, next_state) + (self.discount * self.getValue(next_state)))
         return q_value
 
 
