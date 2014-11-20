@@ -44,7 +44,6 @@ class QLearningAgent(ReinforcementAgent):
 
         "*** YOUR CODE HERE ***"
         self.values = util.Counter()
-        self.visitedStates = []
 
 
     def getQValue(self, state, action):
@@ -54,7 +53,7 @@ class QLearningAgent(ReinforcementAgent):
           or the Q node value otherwise
         """
         "*** YOUR CODE HERE ***"
-        return self.values[(state,action)] if (state,action) in self.visitedStates else 0.0
+        return self.values[(state,action)];
 
 
     def computeValueFromQValues(self, state):
@@ -124,8 +123,6 @@ class QLearningAgent(ReinforcementAgent):
         old_estimate = self.getQValue(state, action)
         sample = reward + self.discount * self.computeValueFromQValues(nextState)
         self.values[(state,action)] = (1-self.alpha)*old_estimate + self.alpha*sample
-        if state not in self.visitedStates:
-          self.visitedStates.append((state,action))
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
