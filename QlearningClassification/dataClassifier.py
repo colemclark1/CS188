@@ -77,10 +77,63 @@ def enhancedFeatureExtractorDigit(datum):
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    a = datum.getPixels()
+
+    num_dark_space = visit(datum)
+    # print num_dark_space
+    for i in xrange(10):
+        if i == num_dark_space:
+            features['darkSpace' + str(i)] = 1
+            print 'darkSpace' + str(i)
+            print "There ==========  ", i
+        else:
+            features['darkSpace' + str(i)] = 0
+            # print "Here"
+
 
     return features
 
+
+def visit(datum):
+
+    count = 0
+    visited = []
+    # print "Start --"
+    for x in range(DIGIT_DATUM_WIDTH):
+        for y in range(DIGIT_DATUM_HEIGHT):
+            # print "For -----"
+            if datum.getPixel(x,y) > 0: # gray/black, I.e. not digit
+                # print "If -----"
+                if (x,y) not in visited:
+                    # print "Count ========"
+                    count += 1
+                    visitHelper((x,y), visited, datum)
+    return count
+
+
+def visitHelper(pixel, visited, datum):
+    if pixel in visited:
+        return
+    visited.append(pixel)
+    for neighbor in getPixelNeighbors(pixel):
+        if datum.getPixel(neighbor[0], neighbor[1]) > 0: # gray/black, I.e. outside of digit
+            visitHelper(neighbor, visited, datum)
+    else:
+        return
+
+def getPixelNeighbors(pixel):
+    neighbors = []
+    x = pixel[0]
+    y = pixel[1]
+    if x-1 in range(DIGIT_DATUM_WIDTH) and y-1 in range(DIGIT_DATUM_HEIGHT):
+        neighbors.append((x-1, y-1))
+    if x-1 in range(DIGIT_DATUM_WIDTH) and y+1 in range(DIGIT_DATUM_HEIGHT):
+        neighbors.append((x-1, y+1))
+    if x+1 in range(DIGIT_DATUM_WIDTH) and y-1 in range(DIGIT_DATUM_HEIGHT):
+        neighbors.append((x+1, y-1))
+    if x+1 in range(DIGIT_DATUM_WIDTH) and y+1 in range(DIGIT_DATUM_HEIGHT):
+        neighbors.append((x+1, y+1))
+    return neighbors
 
 
 def basicFeatureExtractorPacman(state):
@@ -165,16 +218,16 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
 
     # Put any code here...
     # Example of use:
-    # for i in range(len(guesses)):
-    #     prediction = guesses[i]
-    #     truth = testLabels[i]
-    #     if (prediction != truth):
-    #         print "==================================="
-    #         print "Mistake on example %d" % i
-    #         print "Predicted %d; truth is %d" % (prediction, truth)
-    #         print "Image: "
-    #         print rawTestData[i]
-    #         break
+    for i in range(len(guesses)):
+        prediction = guesses[i]
+        truth = testLabels[i]
+        if (prediction != truth):
+            print "==================================="
+            print "Mistake on example %d" % i
+            print "Predicted %d; truth is %d" % (prediction, truth)
+            print "Image: "
+            print rawTestData[i]
+            break
 
 
 ## =====================
