@@ -166,7 +166,22 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    successor = state.generateSuccessor(0, action)
+    pacmanPos = successor.getPacmanPosition()
+    foodGrid = successor.getFood()
+    capsuleList = successor.getCapsules()
+
+    for x in range(foodGrid.width):
+        foodDistance = min([util.manhattanDistance(pacmanPos, (x,y)) for y in range(foodGrid.height)])
+
+    #food distance
+    features['foodDistance'] = 1.0/foodDistance
+
+    #is win and lose
+    if capsuleList:
+        capsuleDistance = min([util.manhattanDistance(pacmanPos, capsule) for capsule in capsuleList])
+        features['capsuleDistance'] = 1.0/capsuleDistance
+
     return features
 
 
@@ -208,16 +223,16 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
 
     # Put any code here...
     # Example of use:
-    for i in range(len(guesses)):
-        prediction = guesses[i]
-        truth = testLabels[i]
-        if (prediction != truth):
-            print "==================================="
-            print "Mistake on example %d" % i
-            print "Predicted %d; truth is %d" % (prediction, truth)
-            print "Image: "
-            print rawTestData[i]
-            break
+    # for i in range(len(guesses)):
+    #     prediction = guesses[i]
+    #     truth = testLabels[i]
+    #     if (prediction != truth):
+    #         print "==================================="
+    #         print "Mistake on example %d" % i
+    #         print "Predicted %d; truth is %d" % (prediction, truth)
+    #         print "Image: "
+    #         print rawTestData[i]
+    #         break
 
 
 ## =====================
