@@ -144,6 +144,28 @@ def basicFeatureExtractorPacman(state):
         features[action] = featureCounter
     return features, state.getLegalActions()
 
+def distanceToClosestGhostFeature(state, action):
+
+    features = util.Counter()
+    #succesor = state.generateSuccessor(0, action).getGhostPositions()
+    succesor = state.generateSuccessor(0, action)
+    if not succesor.getGhostPositions:
+        return;
+    minDistance = util.manhattanDistance(succesor.getPacmanPosition(), succesor.getGhostPositions()[0]);
+    for ghostPosition in succesor.getGhostPositions():
+        minDistance = min(minDistance, util.manhattanDistance(succesor.getPacmanPosition(), ghostPosition));
+    features[action] = minDistance;
+    return features
+
+def numGhosts(state, action):
+    features = util.Counter()
+    succesor = state.generateSuccessor(0, action)
+    features[action] = succesor.getNumAgents() - 1;
+    return features
+
+
+
+
 def enhancedFeatureExtractorPacman(state):
     """
     Your feature extraction playground.
@@ -166,7 +188,8 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    features += distanceToClosestGhostFeature(state, action)
+    features += numGhosts(state, action);
     return features
 
 
