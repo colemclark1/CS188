@@ -47,60 +47,6 @@ def basicFeatureExtractorDigit(datum):
                 features[(x,y)] = 0
     return features
 
-def leftMostPixelLocation(datum):
-    a = datum.getPixels()
-    features = util.Counter()
-    leftMosty = 0;
-    for x in range(DIGIT_DATUM_WIDTH):
-        for y in range(DIGIT_DATUM_HEIGHT):
-            if datum.getPixel(x, y) > 0:
-                leftMosty = y;
-                break;
-        if leftMosty != 0:
-            break;
-    if (leftMosty > DIGIT_DATUM_HEIGHT / 2):
-        features["leftMosty above half"] = 1;
-    else:
-        features["leftMosty above half"] = 0;
-    return features
-
-def maxWidth(datum):
-    a = datum.getPixels()
-    features = util.Counter()
-    maxWidth = 0;
-    maxBreaks = 0;
-    for y in range(DIGIT_DATUM_HEIGHT):
-        xPixelCount = 0;
-        breaks = 0;
-        for x in range(DIGIT_DATUM_WIDTH):
-            if datum.getPixel(x, y) > 0:
-                if xPixelCount == 0:
-                    breaks += 1;
-                xPixelCount += 1;
-            else:
-                maxWidth = max(maxWidth, xPixelCount);
-                xPixelCount = 0;
-        maxBreaks = max(breaks, maxBreaks)
-        if (y %  DIGIT_DATUM_HEIGHT/3) == 0:
-            print "here"
-            if maxWidth >= DIGIT_DATUM_WIDTH/2:
-                features[(y, "wide")] = 1;
-            else:
-                features[(y, "wide")] = 0;
-            if maxBreaks > 1:
-                print "breaks"
-                features[(y, "breaks")] = 1;
-            else:
-                print "does not break"
-                features[(y, "breaks")] = 0;
-            if maxBreaks > 2:
-                print "double break"
-                features[(y, "double break")] = 1;
-            else:
-                print "no double break"
-                features[(y, "double break")] = 0;
-    return features;
-
 def basicFeatureExtractorFace(datum):
     """
     Returns a set of pixel features indicating whether
@@ -129,39 +75,27 @@ def enhancedFeatureExtractorDigit(datum):
     ##
     """
     features =  basicFeatureExtractorDigit(datum)
-    features += leftMostPixelLocation(datum)
-    features += maxWidth(datum);
 
     "*** YOUR CODE HERE ***"
     a = datum.getPixels()
 
     num_dark_space = visit(datum)
-    # print num_dark_space
     for i in xrange(10):
         if i == num_dark_space:
-            features['darkSpace' + str(i)] = 1
-            print 'darkSpace' + str(i)
-            print "There ==========  ", i
+            features[i] = 1
         else:
-            features['darkSpace' + str(i)] = 0
-            # print "Here"
-
+            features[i] = 0
 
     return features
 
 
 def visit(datum):
-
     count = 0
     visited = []
-    # print "Start --"
     for x in range(DIGIT_DATUM_WIDTH):
         for y in range(DIGIT_DATUM_HEIGHT):
-            # print "For -----"
-            if datum.getPixel(x,y) > 0: # gray/black, I.e. not digit
-                # print "If -----"
+            if datum.getPixel(x,y) == 0: # white, I.e. not digit
                 if (x,y) not in visited:
-                    # print "Count ========"
                     count += 1
                     visitHelper((x,y), visited, datum)
     return count
@@ -172,7 +106,7 @@ def visitHelper(pixel, visited, datum):
         return
     visited.append(pixel)
     for neighbor in getPixelNeighbors(pixel):
-        if datum.getPixel(neighbor[0], neighbor[1]) > 0: # gray/black, I.e. outside of digit
+        if datum.getPixel(neighbor[0], neighbor[1]) == 0: # white, I.e. not digit
             visitHelper(neighbor, visited, datum)
     else:
         return
