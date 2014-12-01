@@ -191,11 +191,8 @@ def enhancedPacmanFeatures(state, action):
 
     ghostDelta = min([util.manhattanDistance(pacmanPos, ghost) for ghost in ghostsPos]) < min([util.manhattanDistance(state.getPacmanPosition(), ghost) for ghost in ghostsPos])
 
-    #food distance
     features['foodDistance'] = foodDistance if foodGrid.asList() else 0
-    # features['foodIsNeighbor'] = 1 if foodGrid[pacmanPos[0]][pacmanPos[1]] else 0
     features['score'] = successor.getScore() - state.getScore()
-    # features['numGhosts'] = 1 if successor.getNumAgents() < state.getNumAgents() else 0
     features['closerGhost'] = 1 if ghostDelta else 0
     features['capsuleCount'] = len(capsuleList)
 
