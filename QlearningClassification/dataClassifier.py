@@ -157,14 +157,6 @@ def distanceToClosestGhostFeature(state, action):
     features[action] = minDistance;
     return features
 
-def numGhosts(state, action):
-    features = util.Counter()
-    succesor = state.generateSuccessor(0, action)
-    features[action] = succesor.getNumAgents() - 1;
-    return features
-
-
-
 
 def enhancedFeatureExtractorPacman(state):
     """
@@ -188,23 +180,28 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    features += distanceToClosestGhostFeature(state, action)
-    features += numGhosts(state, action);
     successor = state.generateSuccessor(0, action)
     pacmanPos = successor.getPacmanPosition()
     foodGrid = successor.getFood()
+    ghostsPos = successor.getGhostPositions()
     capsuleList = successor.getCapsules()
 
-    for x in range(foodGrid.width):
-        foodDistance = min([util.manhattanDistance(pacmanPos, (x,y)) for y in range(foodGrid.height)])
+    if foodGrid.asList():
+        foodDistance = min([util.manhattanDistance(pacmanPos, foodPos) for foodPos in foodGrid.asList()])
 
-    #food distance
-    features['foodDistance'] = 1.0/foodDistance
-
-    #is win and lose
+    capsuleDistance = 0
     if capsuleList:
         capsuleDistance = min([util.manhattanDistance(pacmanPos, capsule) for capsule in capsuleList])
-        features['capsuleDistance'] = 1.0/capsuleDistance
+
+    ghostDelta = min([util.manhattanDistance(pacmanPos, ghost) for ghost in ghostsPos]) - min([util.manhattanDistance(state.getPacmanPosition(), ghost) for ghost in ghostsPos])
+
+    #food distance
+    features['foodDistance'] = foodDistance if foodGrid.asList() else 0
+    # features['foodIsNeighbor'] = 1 if foodGrid[pacmanPos[0]][pacmanPos[1]] else 0
+    features['score'] = successor.getScore() - state.getScore()
+    # features['numGhosts'] = 1 if successor.getNumAgents() < state.getNumAgents() else 0
+    # features['closerGhost'] = ghostDelta
+    features['capsuleCount'] = len(capsuleList)
 
     return features
 
